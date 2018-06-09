@@ -76,19 +76,25 @@ $(document).ready(() => { // jQuery main
         //////////////////////////////////////
         // random() run only once?///
         /////////////////////////////////////
-        var theHeight = Math.floor((((Math.random() * 5) + 1) * 50));
         //console.log(theHeight)
-        criminals[0].set({x: 720, y: theHeight});//x will be replaced to canvas.width
-        stage.addChild(criminals[0]);
         plane.set({x: 10, y: 10});
         stage.addChild(plane);
 
-        createjs.Tween.get(criminals[0])
-            .to({x: 280, y: theHeight}, 1000)
-            .call(() => {
-                stage.removeChild(criminals[0]);
-            });
-        stage.addChild(criminals[0]);
+        function animate(){
+            var theHeight = Math.floor((((Math.random() * 5) + 1) * 50));
+            criminals[0].set({x: 720, y: theHeight});//x will be replaced to canvas.width
+            stage.addChild(criminals[0]);
+
+            createjs.Tween.get(criminals[0])
+                .to({x: 280, y: theHeight}, 1000)
+                .call(() => {
+                    stage.removeChild(criminals[0]);
+                    animate();
+                });
+
+        }
+        animate();
+
 
         //控制方向
         window.addEventListener('keydown', function (e) {
@@ -117,6 +123,6 @@ $(document).ready(() => { // jQuery main
         });
     }
 
-    var t = setInterval(draw, 1500);
+    //var t = setInterval(draw, 1500);
     setup();
 });
