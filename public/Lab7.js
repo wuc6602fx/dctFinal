@@ -1,7 +1,9 @@
 $(document).ready(() => { // jQuery main
+
     let stage = new createjs.Stage(canvas);
     let repo = new createjs.LoadQueue();
     let startB;
+
 
     function setup() {
         // automatically update
@@ -9,12 +11,12 @@ $(document).ready(() => { // jQuery main
         createjs.Ticker.framerate = 60;
         // load assets
         repo.loadManifest([
-            {id: 'm1', src: "images/m1.png"},
-            {id: 'm2', src: "images/m2.png"},
+            {id: 'criminal', src: "images/m1.png"},//criminals
+            {id: 'm2', src: "images/m2.png"},//man
             {id: 'm3', src: "images/m3.png"},
             {id: 'm4', src: "images/m4.png"},
-            {id: 'plane', src: "images/plane.jpg"},
-            {id: 'explode', src: '/images/exp.png'},
+            {id: 'plane', src: "images/plane.jpg"},//police
+            {id: 'explode', src: '/images/exp.png'},//bullet explode
             {id: 'startB', src: '/images/startB.png'},
             {id: 'main', src: '/images/main.jpg'},
             {id: 'bg', src: '/images/bg.jpg'}
@@ -53,35 +55,40 @@ $(document).ready(() => { // jQuery main
     }
     //
     function draw() {
+
         //console.log("call draw");
         stage.removeChild(TitleView);
         TitleView = null;
         //ticker
-        createjs.Ticker.addEventListener("tick", handleTick);
-        function handleTick(event) {
-
-        }
+            // createjs.Ticker.addEventListener("tick", handleTick);
+            // function handleTick(event) {
+            //
+            // }
 
         //
 
-        let mountains = [new createjs.Bitmap(repo.getResult('m1')),
+        let criminals = [new createjs.Bitmap(repo.getResult('criminal')),
             new createjs.Bitmap(repo.getResult('m2')),
             new createjs.Bitmap(repo.getResult('m3')),
             new createjs.Bitmap(repo.getResult('m4'))];
         let plane = new createjs.Bitmap(repo.getResult('plane'));
         let exp = new createjs.Bitmap(repo.getResult('explode'));
-        mountains[0].set({x: 600, y: 150});
-        mountains[1].set({x: 600, y: 175});
-        mountains[2].set({x: 600, y: 200});
-        mountains[3].set({x: 600, y: 225});
-        stage.addChild(mountains[0], mountains[1], mountains[2], mountains[3]);
+        //////////////////////////////////////
+        // random() run only once?///
+        /////////////////////////////////////
+        var theHeight = Math.floor((((Math.random() * 5) + 1) * 50));
+        //console.log(theHeight)
+        criminals[0].set({x: 720, y: theHeight});//x will be replaced to canvas.width
+        stage.addChild(criminals[0]);
         plane.set({x: 10, y: 10});
         stage.addChild(plane);
-        createjs.Tween.get(mountains[0], {loop: true}).to({x: 0, y: 150}, 5000);
-        createjs.Tween.get(mountains[1], {loop: true}).to({x: 0, y: 170}, 4500);
-        createjs.Tween.get(mountains[2], {loop: true}).to({x: 0, y: 200}, 4000);
-        createjs.Tween.get(mountains[3], {loop: true}).to({x: 0, y: 225}, 3500);
 
+        createjs.Tween.get(criminals[0])
+            .to({x: 280, y: theHeight}, 1000)
+            .call(() => {
+                stage.removeChild(criminals[0]);
+            });
+        stage.addChild(criminals[0]);
 
         //控制方向
         window.addEventListener('keydown', function (e) {
@@ -92,24 +99,24 @@ $(document).ready(() => { // jQuery main
                 case 40:// down
                     plane.y += 10;
                     break;
+                case 32:
+                    let dot = new createjs.Shape();
+                    dot.graphics.beginFill('black').drawCircle(plane.x + plane.image.width, plane.y + plane.image.height / 2, 5);
+                    createjs.Tween.get(dot)
+                        .to({x: canvas.width}, 1000)
+                        .call(() => {
+                            stage.removeChild(dot);
+                            exp.x = 500;
+                            exp.y = plane.y;
+                            stage.addChild(exp);
+
+                        }).wait(500).call(() => stage.removeChild(exp));
+                    stage.addChild(dot);
+                    break;
             }
         });
-
-        plane.on('click', e => {
-            let dot = new createjs.Shape();
-            dot.graphics.beginFill('red').drawCircle(plane.x + plane.image.width, plane.y + plane.image.height / 2, 5);
-            createjs.Tween.get(dot)
-                .to({x: 600}, 1000)
-                .call(() => {
-                    stage.removeChild(dot);
-                    exp.x = 500;
-                    exp.y = plane.y;
-                    stage.addChild(exp);
-
-                }).wait(500).call(() => stage.removeChild(exp));
-            stage.addChild(dot);
-        })
     }
 
+    var t = setInterval(draw, 1500);
     setup();
 });
