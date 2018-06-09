@@ -59,7 +59,7 @@ $(document).ready(() => { // jQuery main
         //ticker
         createjs.Ticker.addEventListener("tick", handleTick);
         function handleTick(event) {
-            
+
         }
 
         //
