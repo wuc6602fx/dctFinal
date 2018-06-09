@@ -1,6 +1,7 @@
 $(document).ready(() => { // jQuery main
     let stage = new createjs.Stage(canvas);
     let repo = new createjs.LoadQueue();
+    let startB;
 
     function setup() {
         // automatically update
@@ -13,11 +14,56 @@ $(document).ready(() => { // jQuery main
             {id: 'm3', src: "images/m3.png"},
             {id: 'm4', src: "images/m4.png"},
             {id: 'plane', src: "images/plane.jpg"},
-            {id: 'explode', src: '/images/exp.png'}]);
-        repo.on('complete', draw);
+            {id: 'explode', src: '/images/exp.png'},
+            {id: 'startB', src: '/images/startB.png'},
+            {id: 'main', src: '/images/main.jpg'},
+            {id: 'bg', src: '/images/bg.jpg'}
+            ]);
+        repo.on('complete', addTitleView);
     }
 
+
+    //addTitleView()
+
+    let TitleView = new createjs.Container();
+
+    function addTitleView() {
+        let startB = new createjs.Bitmap(repo.getResult('startB'));
+        let main = new createjs.Bitmap(repo.getResult('main'));
+        let bg = new createjs.Bitmap(repo.getResult('bg'));
+        //console.log("Add Title View");
+        startB.x = 240;
+        startB.y = 160;
+        startB.name = 'startB';
+
+
+        TitleView.addChild(bg, main, startB);
+        stage.addChild(TitleView);
+        stage.update();
+
+        // Button Listeners
+
+        // startB.onpress = function tweenTitleView(){
+        //     console.log("press");
+        //     createjs.Tween.get(TitleView).to({y:-320}, 300).call(draw);
+        // }
+        startB.on("click", function(evt) {
+            createjs.Tween.get(TitleView).to({y:-320}, 300).call(draw);
+        });
+    }
+    //
     function draw() {
+        //console.log("call draw");
+        stage.removeChild(TitleView);
+        TitleView = null;
+        //ticker
+        createjs.Ticker.addEventListener("tick", handleTick);
+        function handleTick(event) {
+            
+        }
+
+        //
+
         let mountains = [new createjs.Bitmap(repo.getResult('m1')),
             new createjs.Bitmap(repo.getResult('m2')),
             new createjs.Bitmap(repo.getResult('m3')),
