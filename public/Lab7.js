@@ -4,21 +4,28 @@ $(document).ready(() => { // jQuery main
     let repo = new createjs.LoadQueue();
     let startB;
     let criminals = [];
-    let speedX = -1;//criminal speed
+    let speedX = [-4, -3, -2];//criminal speed
     let endX = 280;//end line to disappear
     let gameStart = false;
     let police;
     let exp;
     let bullet;
     let shooting = false;
-    let kills = 0;
-    let isCounted = false;
-    //下居中文字
+    let kills = 0;//人數
+    let isCounted = false;//防止重複計數
+    const topBarHeight = 100;
+    let isAppear = [1, 1, 1];//0:毒販重生中，打到不會計分，1:計分
+    let nextTimeAppear = [0, 0, 0];
+    let criminalsAppearFrequency = 50; //毒販生成頻率
+    let criminalsAvgSpeed = 2;//毒販走路速度
+
+    //計數器
     var counter = new createjs.Text(new String(kills), "20px Arial", "black"),
         bounds = counter.getBounds();
-
     counter.x = stage.canvas.width - bounds.width >> 1;
-    counter.y = stage.canvas.height - bounds.height;
+
+    //計時器
+
 
     function setup() {
         // automatically update
@@ -78,42 +85,62 @@ $(document).ready(() => { // jQuery main
 
     function createCriminals() {
 
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 3; i++) {
             let criminal = new createjs.Bitmap(repo.getResult('criminal'));
             criminal.set({scaleX: 0.1, scaleY: 0.1});
             criminals.push(criminal);
+            //let theHeight = (Math.floor(Math.random() * 100) % 3) * criminal.image.height * criminal.scaleY * 1.4 + topBarHeight;//1.4為毒販間距
+            let theHeight = i * criminal.image.height * criminal.scaleY * 1.4 + topBarHeight;//1.4為毒販間距
+            criminals[i].set({x: stage.canvas.width, y: theHeight});
         }
-        let theHeight = Math.floor(Math.random() * 200);
-        criminals[0].set({x: stage.canvas.width, y: theHeight});
-        stage.addChild(criminals[0]);
+        for (let i = 0; i < 3; i++) {
+            stage.addChild(criminals[i]);
+        }
 
     }
 
     function tick() {
+        for (let i = 0; i < 3; i++) {
+            if (nextTimeAppear[i] === 0) {
+                isAppear[i] = 1;
+                speedX[i] = -1 * (Math.floor(Math.random() * 10) % 3 + criminalsAvgSpeed);
+            }
+        }
         if (gameStart) {
             counter.text = kills;
-            criminals[0].x += speedX;
-            if (criminals[0].x < endX) {
-                criminals[0].x = stage.canvas.width;
+            criminals[0].x += speedX[0];
+            criminals[1].x += speedX[1];
+            criminals[2].x += speedX[2];
+            for (let i = 0; i < 3; i++) {
+                if (criminals[i].x < endX) {
+                    criminals[i].x = stage.canvas.width;
+                }
             }
+            //collision detection
             if (shooting) {
                 console.log("shooting!");
-                console.log(criminals[0].y + " " + criminals[0].image);
-                if (police.y > criminals[0].y - 20 && police.y < criminals[0].y + 85) {// why criminals[0].image.y = 0?
-                    console.log("hit!");
-                    if (!isCounted) {
-                        kills += 1;
-                        isCounted = true;
-                    }
-                    criminals[0].x = stage.canvas.width;
 
+                for (let i = 0; i < 3; i++) {
+                    if (police.y > criminals[i].y - 20 && police.y < criminals[i].y + 85 && isAppear[i] === 1) {// why criminals[0].image.y = 0?
+                        console.log("hit!");
+                        if (!isCounted) {
+                            kills += 1;
+                            isCounted = true;
+                            isAppear[i] = 0;
+                            speedX[i] = 0;
+                            nextTimeAppear[i] = ((Math.floor(Math.random() * 10) % 3 + 1) * criminalsAppearFrequency);
+                        }
+                        criminals[i].x = stage.canvas.width;
+                    }
                 }
             }
             else {
                 if (isCounted) {
                     isCounted = false;
                 }
-
+            }
+            for (let i = 0; i < 3; i++) {
+                nextTimeAppear[i] -= 1;
             }
         }
 
@@ -163,7 +190,7 @@ $(document).ready(() => { // jQuery main
                             stage.removeChild(bullet);
                             exp.x = 500;
                             exp.y = police.y;
-                            stage.addChild(exp);
+                            //stage.addChild(exp);
                             shooting = false;
 
                         }).wait(500).call(() => stage.removeChild(exp));
@@ -175,4 +202,5 @@ $(document).ready(() => { // jQuery main
     }
 
     setup();
-});
+})
+;
