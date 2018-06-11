@@ -9,8 +9,16 @@ $(document).ready(() => { // jQuery main
     let gameStart = false;
     let police;
     let exp;
+    let bullet;
     let shooting = false;
     let kills = 0;
+    let isCounted = false;
+    //下居中文字
+    var counter = new createjs.Text(new String(kills), "20px Arial", "black"),
+        bounds = counter.getBounds();
+
+    counter.x = stage.canvas.width - bounds.width >> 1;
+    counter.y = stage.canvas.height - bounds.height;
 
     function setup() {
         // automatically update
@@ -83,19 +91,29 @@ $(document).ready(() => { // jQuery main
 
     function tick() {
         if (gameStart) {
+            counter.text = kills;
             criminals[0].x += speedX;
             if (criminals[0].x < endX) {
                 criminals[0].x = stage.canvas.width;
             }
             if (shooting) {
                 console.log("shooting!");
-                console.log(criminals[0].y + " " + criminals[0].image)
+                console.log(criminals[0].y + " " + criminals[0].image);
                 if (police.y > criminals[0].y - 20 && police.y < criminals[0].y + 85) {// why criminals[0].image.y = 0?
                     console.log("hit!");
-                    kills += 1;
+                    if (!isCounted) {
+                        kills += 1;
+                        isCounted = true;
+                    }
                     criminals[0].x = stage.canvas.width;
 
                 }
+            }
+            else {
+                if (isCounted) {
+                    isCounted = false;
+                }
+
             }
         }
 
@@ -113,7 +131,7 @@ $(document).ready(() => { // jQuery main
         // function handleTick(event) {
         //
         // }
-
+        stage.addChild(counter);
         police = new createjs.Bitmap(repo.getResult('police'));
         exp = new createjs.Bitmap(repo.getResult('explode'));
 
@@ -137,25 +155,24 @@ $(document).ready(() => { // jQuery main
                     police.y += 10;
                     break;
                 case 32:
-                    let dot = new createjs.Shape();
-                    dot.graphics.beginFill('black').drawCircle(police.x + (police.image.width) * police.scaleX + 10, police.y + (police.image.height) * police.scaleY / 6, 2);
-                    createjs.Tween.get(dot)
+                    bullet = new createjs.Shape();
+                    bullet.graphics.beginFill('black').drawCircle(police.x + (police.image.width) * police.scaleX + 10, police.y + (police.image.height) * police.scaleY / 6, 2);
+                    createjs.Tween.get(bullet)
                         .to({x: stage.canvas.width}, 100)
                         .call(() => {
-                            stage.removeChild(dot);
+                            stage.removeChild(bullet);
                             exp.x = 500;
                             exp.y = police.y;
                             stage.addChild(exp);
                             shooting = false;
 
                         }).wait(500).call(() => stage.removeChild(exp));
-                    stage.addChild(dot);
+                    stage.addChild(bullet);
                     shooting = true;
                     break;
             }
         });
     }
 
-    //var t = setInterval(draw, 1500);
     setup();
 });
