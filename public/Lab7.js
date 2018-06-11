@@ -74,11 +74,11 @@ $(document).ready(() => { // jQuery main
 
         // startB.onpress = function tweenTitleView(){
         //     console.log("press");
-        //     createjs.Tween.get(TitleView).to({y:-320}, 300).call(draw);
+        //     createjs.Tween.get(TitleView).to({y:-320}, 300).call(drawGame);
         // }
         startB.on("click", function (event) {
 
-            createjs.Tween.get(TitleView).to({y: -320}, 300).call(draw);
+            createjs.Tween.get(TitleView).to({y: -320}, 300).call(drawGame);
 
         });
     }
@@ -99,14 +99,15 @@ $(document).ready(() => { // jQuery main
 
     }
 
-    function tick() {
-        for (let i = 0; i < 3; i++) {
-            if (nextTimeAppear[i] === 0) {
-                isAppear[i] = 1;
-                speedX[i] = -1 * (Math.floor(Math.random() * 10) % 3 + criminalsAvgSpeed);
-            }
-        }
+    function tick() {//update every second
+
         if (gameStart) {
+            for (let i = 0; i < 3; i++) {
+                if (nextTimeAppear[i] === 0) {//重生時間到
+                    isAppear[i] = 1;
+                    speedX[i] = -1 * (Math.floor(Math.random() * 10) % 3 + criminalsAvgSpeed);
+                }
+            }
             counter.text = "Kill: " + kills;
             criminals[0].x += speedX[0];
             criminals[1].x += speedX[1];
@@ -151,9 +152,9 @@ $(document).ready(() => { // jQuery main
     }
 
 
-    function draw() {
+    function drawGame() {
 
-        //console.log("call draw");
+        //console.log("call drawGame");
         stage.removeChild(TitleView);
         TitleView = null;
         //ticker
@@ -161,6 +162,7 @@ $(document).ready(() => { // jQuery main
         // function handleTick(event) {
         //
         // }
+
         stage.addChild(counter);
         police = new createjs.Bitmap(repo.getResult('police'));
         exp = new createjs.Bitmap(repo.getResult('explode'));
@@ -172,9 +174,15 @@ $(document).ready(() => { // jQuery main
 
         police.set({x: 10, y: 10});
         stage.addChild(police);
-        createCriminals();
+
+        startTheGame();
+    }
+
+    function startTheGame() {
 
         gameStart = true;
+        createCriminals();
+
         //控制方向
         window.addEventListener('keydown', function (e) {
             switch (e.keyCode) {
