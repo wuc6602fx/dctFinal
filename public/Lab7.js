@@ -2,6 +2,8 @@ $(document).ready(() => { // jQuery main
 
     let stage = new createjs.Stage(canvas);
     let repo = new createjs.LoadQueue();
+    let TitleView = new createjs.Container();
+    let TeachView = new createjs.Container();
     let startB;
     let criminals = [];
     let speedX = [-4, -3, -2];//criminal speed
@@ -54,7 +56,6 @@ $(document).ready(() => { // jQuery main
 
     //addTitleView()
 
-    let TitleView = new createjs.Container();
 
     function addTitleView() {
         let startB = new createjs.Bitmap(repo.getResult('startB'));
@@ -174,12 +175,39 @@ $(document).ready(() => { // jQuery main
 
         police.set({x: 10, y: 10});
         stage.addChild(police);
+        //createCriminals();
+        teachTheGame();
 
-        startTheGame();
+    }
+
+    function teachTheGame() {
+        let startB = new createjs.Bitmap(repo.getResult('startB'));
+        //let main = new createjs.Bitmap(repo.getResult('main'));
+        let bg = new createjs.Bitmap(repo.getResult('bg'));
+        bg.set({x: bg.image.width / 4, y: bg.image.height / 4, scaleX: 0.5, scaleY: 0.5});
+
+        startB.set({
+            x: bg.image.width / 4 + startB.image.width / 4,
+            y: bg.image.height / 4 + startB.image.height / 4,
+            scaleX: 0.5,
+            scaleY: 0.5
+        });
+        startB.name = 'startB';
+
+
+        TeachView.addChild(bg, startB);
+        stage.addChild(TeachView);
+        stage.update();
+        startB.on("click", function (event) {
+
+            createjs.Tween.get(TeachView).to({y: -320}, 300).call(startTheGame());
+
+        });
     }
 
     function startTheGame() {
-
+        stage.removeChild(TeachView);
+        TeachView = null;
         gameStart = true;
         createCriminals();
 
