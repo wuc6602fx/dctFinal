@@ -107,7 +107,7 @@ $(document).ready(() => { // jQuery main
             }
         }
         if (gameStart) {
-            counter.text = kills;
+            counter.text = "Kill: " + kills;
             criminals[0].x += speedX[0];
             criminals[1].x += speedX[1];
             criminals[2].x += speedX[2];
@@ -123,6 +123,9 @@ $(document).ready(() => { // jQuery main
                 for (let i = 0; i < 3; i++) {
                     if (police.y > criminals[i].y - 20 && police.y < criminals[i].y + 85 && isAppear[i] === 1) {// why criminals[0].image.y = 0?
                         console.log("hit!");
+                        exp.x = criminals[i].x;
+                        exp.y = criminals[i].y;
+                        stage.addChild(exp);
                         if (!isCounted) {
                             kills += 1;
                             isCounted = true;
@@ -188,8 +191,8 @@ $(document).ready(() => { // jQuery main
                         .to({x: stage.canvas.width}, 100)
                         .call(() => {
                             stage.removeChild(bullet);
-                            exp.x = 500;
-                            exp.y = police.y;
+                            //exp.x = 500;
+                            //exp.y = police.y;
                             //stage.addChild(exp);
                             shooting = false;
 
