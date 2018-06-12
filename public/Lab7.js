@@ -4,6 +4,8 @@ $(document).ready(() => { // jQuery main
     let repo = new createjs.LoadQueue();
     let TitleView = new createjs.Container();
     let TeachView = new createjs.Container();
+    let nothing = new createjs.Container();//Redundant object, used in tick(), in order to change to finalView
+    let finalView = new createjs.Container();
     let startB;
     let criminals = [];
     let speedX = [-4, -3, -2];//criminal speed
@@ -20,9 +22,10 @@ $(document).ready(() => { // jQuery main
     let nextTimeAppear = [0, 0, 0];
     let criminalsAppearFrequency = 50; //毒販生成頻率
     let criminalsAvgSpeed = 2;//毒販走路速度
+    let time = 0;  //total elapsed game time
 
     //計數器
-    var counter = new createjs.Text(new String(kills), "20px Arial", "black"),
+    let counter = new createjs.Text(new String(kills), "20px Arial", "black"),
         bounds = counter.getBounds();
     counter.x = stage.canvas.width - bounds.width >> 1;
 
@@ -78,9 +81,7 @@ $(document).ready(() => { // jQuery main
         //     createjs.Tween.get(TitleView).to({y:-320}, 300).call(drawGame);
         // }
         startB.on("click", function (event) {
-
             createjs.Tween.get(TitleView).to({y: -320}, 300).call(drawGame);
-
         });
     }
 
@@ -100,7 +101,18 @@ $(document).ready(() => { // jQuery main
 
     }
 
-    function tick() {//update every second
+    function tick() {//update every second   //call 60 times per second
+
+        //time's up, game over, move to finalScreen
+        time +=1;
+        console.log(time);
+        if(time === 800){   //600加上多遊戲介紹時間，最好要從gameStart後開始算時間
+            createjs.Ticker.off("tick", tick);
+            createjs.Tween.get(nothing).to({y: -320}, 300).call(moveToFinalScreen());
+
+        }
+        //
+
 
         if (gameStart) {
             for (let i = 0; i < 3; i++) {
@@ -199,9 +211,7 @@ $(document).ready(() => { // jQuery main
         stage.addChild(TeachView);
         stage.update();
         startB.on("click", function (event) {
-
             createjs.Tween.get(TeachView).to({y: -320}, 300).call(startTheGame());
-
         });
     }
 
@@ -209,6 +219,8 @@ $(document).ready(() => { // jQuery main
         stage.removeChild(TeachView);
         TeachView = null;
         gameStart = true;
+        //createjs.Ticker.on("tick", tick);  //for test
+        //createjs.Ticker.framerate = 60;
         createCriminals();
 
         //控制方向
@@ -238,6 +250,15 @@ $(document).ready(() => { // jQuery main
                     break;
             }
         });
+    }
+    function moveToFinalScreen(){
+        stage.removeAllChildren();
+        stage.update();
+
+        let bg = new createjs.Bitmap(repo.getResult('bg'));
+        finalView.addChild(bg);
+        stage.addChild(finalView);
+        stage.update();
     }
 
     setup();
