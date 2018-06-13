@@ -29,17 +29,20 @@ $(document).ready(() => { // jQuery main
     let criminal;
     let tickTimes = 0;  //tick總次數
     let totalTime = 0;
-    let timer = new createjs.Text("bold 86px Arial", "black");
-    timer.scale = 3;
+    let hourglass;
 
     //計數器
-    let counter = new createjs.Text(new String(kills), "20px Arial", "black"),
-        bounds = counter.getBounds();
+    let counter = new createjs.Text(new String(kills), "20px Arial", "black");
+    let bounds = counter.getBounds();
     counter.x = stage.canvas.width - bounds.width >> 1;
     counter.y = 10
     counter.scale = 1.5;
 
     //計時器
+    let timer = new createjs.Text(new String(totalTime), "20px Arial", "black");
+    timer.x = stage.canvas.width - bounds.width >> 1;
+    timer.y = 10
+    timer.scale = 1.5;
 
     function setup() {
         // automatically update
@@ -65,7 +68,8 @@ $(document).ready(() => { // jQuery main
             {id: 'backgroundPlaying', src: '/images/background_playing.png'},
             {id: 'backgroundBuilding', src: '/images/background_house.png'},
             {id: 'passby', src: '/images/stranger_girl.png'},
-            {id: 'score', src: '/images/score.png'}
+            {id: 'score', src: '/images/score.png'},
+            {id: 'hourglass', src: '/images/time.png'}
         ]);
         repo.on('complete', addTitleView);
     }
@@ -121,12 +125,6 @@ $(document).ready(() => { // jQuery main
         tickTimes += 1;
         //console.log(tickTimes);
 
-        //遊戲剩餘秒數
-        totalTime = 60 - Math.floor(createjs.Ticker.getTime() / 1000);
-        timer.text = "遊戲時間:" + String(totalTime) + "秒";
-        timer.x = 900;
-        stage.addChild(timer);
-        //
 
         //if (tickTimes === 800) {   //600加上多遊戲介紹時間，最好要從gameStart後開始算時間
         //createjs.Ticker.off("tick", tick);
@@ -134,6 +132,11 @@ $(document).ready(() => { // jQuery main
 
 
         if (gameStart) {
+            //遊戲剩餘秒數
+            totalTime = 62 - Math.floor(createjs.Ticker.getTime() / 1000);
+            timer.text = String(totalTime);
+            timer.x = 900;
+            stage.addChild(timer);
 
             for (let i = 0; i < 3; i++) {
                 if (nextTimeAppear[i] === 0) {//重生時間到
@@ -142,7 +145,7 @@ $(document).ready(() => { // jQuery main
                 }
             }
             //createjs.Tween.get(backgroundBuilding, {loop: true}).to({x: 0}, 3000);
-            counter.text = "Kill: " + kills;
+            counter.text = kills;
             criminals[0].x += speedX[0];
             criminals[1].x += speedX[1];
             criminals[2].x += speedX[2];
@@ -212,6 +215,7 @@ $(document).ready(() => { // jQuery main
         police = new createjs.Bitmap(repo.getResult('police'));
         exp = new createjs.Bitmap(repo.getResult('explode'));
         score = new createjs.Bitmap(repo.getResult('score'));
+        hourglass = new createjs.Bitmap(repo.getResult('hourglass'));
         //resize image
         police.set({scaleX: 0.1, scaleY: 0.1});
         exp.set({scaleX: 0.5, scaleY: 0.5});
@@ -223,8 +227,11 @@ $(document).ready(() => { // jQuery main
         police.set({x: 10, y: topBarHeight});
         score.x = 580;
         score.scale = 0.2;
+        hourglass.x = 850;
+        hourglass.scale = 0.2;
         stage.addChild(police);
         stage.addChild(score);
+        stage.addChild(hourglass);
         //createCriminals();
         teachTheGame();
 
