@@ -30,6 +30,7 @@ $(document).ready(() => { // jQuery main
     let tickTimes = 0;  //tick總次數
     let totalTime = 0;
     let hourglass;
+    let beforeGameTime = 0;
 
     //計數器
     let counter = new createjs.Text(new String(kills), "20px Arial", "black");
@@ -130,11 +131,15 @@ $(document).ready(() => { // jQuery main
         //if (tickTimes === 800) {   //600加上多遊戲介紹時間，最好要從gameStart後開始算時間
         //createjs.Ticker.off("tick", tick);
         //createjs.Tween.get(nothing).to({y: -320}, 300).call(moveToFinalScreen());
-
+        //}
 
         if (gameStart) {
             //遊戲剩餘秒數
-            totalTime = 62 - Math.floor(createjs.Ticker.getTime() / 1000);
+            totalTime = 60 + beforeGameTime - Math.floor(createjs.Ticker.getTime() / 1000);
+            if(totalTime === 0){
+                createjs.Ticker.off("tick", tick);
+                createjs.Tween.get(nothing).to({y: -320}, 300).call(moveToFinalScreen());
+            }
             timer.text = String(totalTime);
             timer.x = 900;
             stage.addChild(timer);
@@ -263,15 +268,18 @@ $(document).ready(() => { // jQuery main
     }
 
     function startTheGame() {
+        beforeGameTime = Math.floor(createjs.Ticker.getTime() / 1000);
         stage.removeChild(TeachView);
         TeachView = null;
         gameStart = true;
         //createjs.Ticker.on("tick", tick);  //for test
         //createjs.Ticker.framerate = 60;
+
         createCriminals();
 
         createjs.Tween.get(backgroundBuilding, {loop: true}).to({x: -1 * backgroundBuilding.image.width}, 6000);
         //控制方向
+
         window.addEventListener('keydown', function (e) {
             switch (e.keyCode) {
                 case 38:// up
