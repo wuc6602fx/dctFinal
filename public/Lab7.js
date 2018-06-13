@@ -103,7 +103,7 @@ $(document).ready(() => { // jQuery main
 
         for (let i = 0; i < 3; i++) {
             criminal = new createjs.Bitmap(repo.getResult('criminal'));
-            criminal.set({scaleX: 0.1, scaleY: 0.1});
+            criminal.set({scaleX: 0.12, scaleY: 0.12});
             criminals.push(criminal);
             //let theHeight = (Math.floor(Math.random() * 100) % 3) * criminal.image.height * criminal.scaleY * 1.4 + topBarHeight;//1.4為毒販間距
             let theHeight = i * criminal.image.height * criminal.scaleY * 1.4 + topBarHeight;//1.4為毒販間距
@@ -213,9 +213,9 @@ $(document).ready(() => { // jQuery main
         exp = new createjs.Bitmap(repo.getResult('explode'));
         score = new createjs.Bitmap(repo.getResult('score'));
         //resize image
-        police.set({scaleX: 0.1, scaleY: 0.1});
+        police.set({scaleX: 0.15, scaleY: 0.15});
         exp.set({scaleX: 0.5, scaleY: 0.5});
-        backgroundBuilding.set({x: stage.canvas.width, y: 30, scaleX: 0.5, scaleY: 0.5});
+        backgroundBuilding.set({x: stage.canvas.width, y: 30, scaleX: 1.1, scaleY: 0.5});
         backgroundPlaying.set({x: 0, y: 0});
         stage.addChild(backgroundPlaying);
         stage.addChild(backgroundBuilding);
@@ -261,7 +261,8 @@ $(document).ready(() => { // jQuery main
         //createjs.Ticker.on("tick", tick);  //for test
         //createjs.Ticker.framerate = 60;
         createCriminals();
-        createjs.Tween.get(backgroundBuilding, {loop: true}).to({x: -1 * backgroundBuilding.image.width / 2}, 6000);
+
+        createjs.Tween.get(backgroundBuilding, {loop: true}).to({x: -1 * backgroundBuilding.image.width}, 6000);
         //控制方向
         window.addEventListener('keydown', function (e) {
             switch (e.keyCode) {
