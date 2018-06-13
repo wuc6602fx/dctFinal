@@ -13,6 +13,7 @@ $(document).ready(() => { // jQuery main
     let gameStart = false;
     let police;
     let exp;
+    let score;
     let bullet;
     let shooting = false;
     let kills = 0;//人數
@@ -22,20 +23,23 @@ $(document).ready(() => { // jQuery main
     let nextTimeAppear = [0, 0, 0];
     let criminalsAppearFrequency = 50; //毒販生成頻率
     let criminalsAvgSpeed = 2;//毒販走路速度
-    let time = 0;  //total elapsed game time
     let backgroundPlaying;
     let backgroundBuilding;
-    let passby;
     let isPassbyAppear = false;
     let criminal;
+    let tickTimes = 0;  //tick總次數
+    let totalTime = 0;
+    let timer = new createjs.Text("bold 86px Arial", "black");
+    timer.scale = 3;
 
     //計數器
     let counter = new createjs.Text(new String(kills), "20px Arial", "black"),
         bounds = counter.getBounds();
     counter.x = stage.canvas.width - bounds.width >> 1;
+    counter.y = 10
+    counter.scale = 1.5;
 
     //計時器
-
 
     function setup() {
         // automatically update
@@ -46,6 +50,7 @@ $(document).ready(() => { // jQuery main
         */
         createjs.Ticker.on("tick", tick);
         createjs.Ticker.framerate = 60;
+
         // load assets
         repo.loadManifest([
             {id: 'criminal', src: "images/drugs_man.png"},//criminals
@@ -59,7 +64,8 @@ $(document).ready(() => { // jQuery main
             {id: 'bg', src: '/images/bg.jpg'},
             {id: 'backgroundPlaying', src: '/images/background_playing.png'},
             {id: 'backgroundBuilding', src: '/images/background_house.png'},
-            {id: 'passby', src: '/images/stranger_girl.png'}
+            {id: 'passby', src: '/images/stranger_girl.png'},
+            {id: 'score', src: '/images/score.png'}
         ]);
         repo.on('complete', addTitleView);
     }
@@ -112,9 +118,19 @@ $(document).ready(() => { // jQuery main
     function tick() {//update every second   //call 60 times per second
 
         //time's up, game over, move to finalScreen
+        tickTimes += 1;
+        //console.log(tickTimes);
 
-
+        //遊戲剩餘秒數
+        totalTime = 60 - Math.floor(createjs.Ticker.getTime() / 1000);
+        timer.text = "遊戲時間:" + String(totalTime) + "秒";
+        timer.x = 900;
+        stage.addChild(timer);
         //
+
+        //if (tickTimes === 800) {   //600加上多遊戲介紹時間，最好要從gameStart後開始算時間
+        //createjs.Ticker.off("tick", tick);
+        //createjs.Tween.get(nothing).to({y: -320}, 300).call(moveToFinalScreen());
 
 
         if (gameStart) {
@@ -175,6 +191,7 @@ $(document).ready(() => { // jQuery main
         }
 
         stage.update();
+        //}
     }
 
 
@@ -194,7 +211,7 @@ $(document).ready(() => { // jQuery main
         backgroundBuilding = new createjs.Bitmap(repo.getResult('backgroundBuilding'));
         police = new createjs.Bitmap(repo.getResult('police'));
         exp = new createjs.Bitmap(repo.getResult('explode'));
-
+        score = new createjs.Bitmap(repo.getResult('score'));
         //resize image
         police.set({scaleX: 0.1, scaleY: 0.1});
         exp.set({scaleX: 0.5, scaleY: 0.5});
@@ -204,14 +221,17 @@ $(document).ready(() => { // jQuery main
         stage.addChild(backgroundBuilding);
         stage.addChild(counter);
         police.set({x: 10, y: topBarHeight});
+        score.x = 580;
+        score.scale = 0.2;
         stage.addChild(police);
+        stage.addChild(score);
         //createCriminals();
         teachTheGame();
 
     }
 
     function teachTheGame() {
-        let startB = new createjs.Bitmap(repo.getResult('startB'));
+        startB = new createjs.Bitmap(repo.getResult('startB'));
         //let main = new createjs.Bitmap(repo.getResult('main'));
         let bg = new createjs.Bitmap(repo.getResult('bg'));
         bg.set({x: bg.image.width / 4, y: bg.image.height / 4, scaleX: 0.5, scaleY: 0.5});
@@ -230,6 +250,7 @@ $(document).ready(() => { // jQuery main
         stage.update();
         startB.on("click", function (event) {
             createjs.Tween.get(TeachView).to({y: -320}, 300).call(startTheGame());
+            //startTheGame();
         });
     }
 
@@ -285,5 +306,4 @@ $(document).ready(() => { // jQuery main
     }
 
     setup();
-})
-;
+});
