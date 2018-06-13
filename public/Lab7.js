@@ -30,6 +30,8 @@ $(document).ready(() => { // jQuery main
     let tickTimes = 0;  //tick總次數
     let totalTime = 0;
     let hourglass;
+    let boy;
+    let girl;
 
     //計數器
     let counter = new createjs.Text(new String(kills), "20px Arial", "black");
@@ -70,6 +72,8 @@ $(document).ready(() => { // jQuery main
             {id: 'passbyBoy', src: '/images/stranger_boy.png'},
             {id: 'passbyGirl', src: '/images/stranger_girl.png'},
             {id: 'score', src: '/images/score.png'},
+            {id: 'bgMusic', src: '/images/bgmusic.mp3'},
+            {id: 'shootMusic', src: '/images/shoot.mp3'},
             {id: 'hourglass', src: '/images/time.png'}
         ]);
         repo.on('complete', addTitleView);
@@ -120,6 +124,18 @@ $(document).ready(() => { // jQuery main
 
     }
 
+    function changeCriminal(change, i) {
+        if (change === 0) {//change to boy
+            criminals[i] = boy;
+        }
+        else if (change === 1) {//change to girl
+            criminals[i] = girl;
+        } else {
+            criminals[i] = criminal;
+        }
+
+    }
+
     function tick() {//update every second   //call 60 times per second
 
         //time's up, game over, move to finalScreen
@@ -141,6 +157,7 @@ $(document).ready(() => { // jQuery main
 
             for (let i = 0; i < 3; i++) {
                 if (nextTimeAppear[i] === 0) {//重生時間到
+                    //changeCriminal(Math.floor(Math.random() * 10) % 3, i);
                     isAppear[i] = 1;
                     speedX[i] = -1 * (Math.floor(Math.random() * 10) % 3 + criminalsAvgSpeed);
                 }
@@ -161,7 +178,7 @@ $(document).ready(() => { // jQuery main
                 console.log("shooting!");
 
                 for (let i = 0; i < 3; i++) {
-                    if (police.y > criminals[i].y - 20 && police.y < criminals[i].y + 85 && isAppear[i] === 1) {// why criminals[0].image.y = 0?
+                    if (police.y > criminals[i].y - 20 && police.y < criminals[i].y + 85 && isAppear[i] === 1) {
                         console.log("hit!");
                         exp.x = criminals[i].x;
                         exp.y = criminals[i].y;
@@ -209,7 +226,8 @@ $(document).ready(() => { // jQuery main
         // function handleTick(event) {
         //
         // }
-
+        boy = new createjs.Bitmap(repo.getResult('passbyBoy'));
+        girl = new createjs.Bitmap(repo.getResult('passbyGirl'));
 
         backgroundPlaying = new createjs.Bitmap(repo.getResult('backgroundPlaying'));
         backgroundBuilding = new createjs.Bitmap(repo.getResult('backgroundBuilding'));
@@ -285,6 +303,7 @@ $(document).ready(() => { // jQuery main
                     break;
                 case 32:
                     bullet = new createjs.Shape();
+
                     bullet.graphics.beginFill('black').drawCircle(police.x + (police.image.width) * police.scaleX + 10, police.y + (police.image.height) * police.scaleY / 6, 2);
                     createjs.Tween.get(bullet)
                         .to({x: stage.canvas.width}, 100)
@@ -294,7 +313,6 @@ $(document).ready(() => { // jQuery main
                             //exp.y = police.y;
                             //stage.addChild(exp);
                             shooting = false;
-
                         }).wait(500).call(() => stage.removeChild(exp));
                     stage.addChild(bullet);
                     shooting = true;
