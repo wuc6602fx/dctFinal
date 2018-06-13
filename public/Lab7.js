@@ -67,7 +67,8 @@ $(document).ready(() => { // jQuery main
             {id: 'bg', src: '/images/bg.jpg'},
             {id: 'backgroundPlaying', src: '/images/background_playing.png'},
             {id: 'backgroundBuilding', src: '/images/background_house.png'},
-            {id: 'passby', src: '/images/stranger_girl.png'},
+            {id: 'passbyBoy', src: '/images/stranger_boy.png'},
+            {id: 'passbyGirl', src: '/images/stranger_girl.png'},
             {id: 'score', src: '/images/score.png'},
             {id: 'hourglass', src: '/images/time.png'}
         ]);
