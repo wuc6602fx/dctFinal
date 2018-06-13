@@ -13,6 +13,7 @@ $(document).ready(() => { // jQuery main
     let gameStart = false;
     let police;
     let exp;
+    let score;
     let bullet;
     let shooting = false;
     let kills = 0;//人數
@@ -22,15 +23,19 @@ $(document).ready(() => { // jQuery main
     let nextTimeAppear = [0, 0, 0];
     let criminalsAppearFrequency = 50; //毒販生成頻率
     let criminalsAvgSpeed = 2;//毒販走路速度
-    let time = 0;  //total elapsed game time
+    let tickTimes = 0;  //tick總次數
+    let totalTime = 0;
+    let timer = new createjs.Text("bold 86px Arial", "black");
+    timer.scale = 3;
+
 
     //計數器
     let counter = new createjs.Text(new String(kills), "20px Arial", "black"),
         bounds = counter.getBounds();
     counter.x = stage.canvas.width - bounds.width >> 1;
-
+    counter.y = 10
+    counter.scale = 1.5;
     //計時器
-
 
     function setup() {
         // automatically update
@@ -41,6 +46,7 @@ $(document).ready(() => { // jQuery main
         */
         createjs.Ticker.on("tick", tick);
         createjs.Ticker.framerate = 60;
+
         // load assets
         repo.loadManifest([
             {id: 'criminal', src: "images/drugs_man.png"},//criminals
@@ -51,7 +57,8 @@ $(document).ready(() => { // jQuery main
             {id: 'explode', src: '/images/exp.png'},//bullet explode
             {id: 'startB', src: '/images/startB.png'},
             {id: 'main', src: '/images/main.jpg'},
-            {id: 'bg', src: '/images/bg.jpg'}
+            {id: 'bg', src: '/images/bg.jpg'},
+            {id: 'score', src: '/images/score.png'}
         ]);
         repo.on('complete', addTitleView);
     }
@@ -104,9 +111,17 @@ $(document).ready(() => { // jQuery main
     function tick() {//update every second   //call 60 times per second
 
         //time's up, game over, move to finalScreen
-        time +=1;
-        console.log(time);
-        if(time === 800){   //600加上多遊戲介紹時間，最好要從gameStart後開始算時間
+        tickTimes +=1;
+        console.log(tickTimes);
+
+        //遊戲剩餘秒數
+        totalTime = 60 - Math.floor(createjs.Ticker.getTime()/1000);
+        timer.text = "遊戲時間:" + String(totalTime) + "秒";
+        timer.x = 900;
+        stage.addChild(timer);
+        //
+
+        if(tickTimes === 800){   //600加上多遊戲介紹時間，最好要從gameStart後開始算時間
             createjs.Ticker.off("tick", tick);
             createjs.Tween.get(nothing).to({y: -320}, 300).call(moveToFinalScreen());
 
@@ -179,14 +194,17 @@ $(document).ready(() => { // jQuery main
         stage.addChild(counter);
         police = new createjs.Bitmap(repo.getResult('police'));
         exp = new createjs.Bitmap(repo.getResult('explode'));
-
+        score = new createjs.Bitmap(repo.getResult('score'));
         //resize image
         police.set({scaleX: 0.1, scaleY: 0.1});
         exp.set({scaleX: 0.5, scaleY: 0.5});
+        score.x = 580;
+        score.scale = 0.2;
 
 
         police.set({x: 10, y: 10});
         stage.addChild(police);
+        stage.addChild(score);
         //createCriminals();
         teachTheGame();
 
