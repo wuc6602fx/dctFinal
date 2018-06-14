@@ -128,7 +128,7 @@ $(document).ready(() => { // jQuery main
 
         for (let i = 0; i < 3; i++) {
             criminal = new createjs.Bitmap(repo.getResult('criminal'));
-            criminal.set({scaleX: 0.15, scaleY: 0.15});
+            criminal.set({scaleX: 0.13, scaleY: 0.15});
             criminals.push(criminal);
             let theHeight = i * criminal.image.height * criminal.scaleY * 1.1 + topBarHeight;//1.4為毒販間距
             criminals[i].set({x: stage.canvas.width, y: theHeight});
@@ -141,17 +141,17 @@ $(document).ready(() => { // jQuery main
     function changeCriminal(change, i) {
         if (change === 0) {//change to boy
             criminals[i].image = boy.image;
-            criminals[i].set({scaleX: 0.08, scaleY: 0.08});
+            criminals[i].set({scaleX: 0.09, scaleY: 0.08});
             console.log("Change to boy.");
         }
         else if (change === 1) {//change to girl
             criminals[i].image = girl.image;
-            criminals[i].set({scaleX: 0.15, scaleY: 0.15});
+            criminals[i].set({scaleX: 0.17, scaleY: 0.15});
             console.log("Change to girl.");
         }
         else if (change === 2) {//change to criminal
             criminals[i].image = criminal.image;
-            criminals[i].set({scaleX: 0.15, scaleY: 0.15});
+            criminals[i].set({scaleX: 0.13, scaleY: 0.15});
             console.log("Change to criminal.");
         }
         else {
