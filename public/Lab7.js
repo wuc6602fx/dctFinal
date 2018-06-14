@@ -33,19 +33,31 @@ $(document).ready(() => { // jQuery main
     let girl;
     let beforeGameTime = 0;
     let isCriminal = [1, 1, 1];
+    let volumeOfBgm = 0.3;//0~1
+
 
     //計數器
     let counter = new createjs.Text(new String(kills), "20px Arial", "black");
     let bounds = counter.getBounds();
     counter.x = stage.canvas.width - bounds.width >> 1;
-    counter.y = 10
+    counter.y = 10;
     counter.scale = 1.5;
 
     //計時器
     let timer = new createjs.Text(new String(totalTime), "20px Arial", "black");
     timer.x = stage.canvas.width - bounds.width >> 1;
-    timer.y = 10
+    timer.y = 10;
     timer.scale = 1.5;
+
+    //播放背景音樂
+    createjs.Sound.registerSound({src: "/images/bgmusic.mp3", id: "sound"});
+    var props = new createjs.PlayPropsConfig().set({
+        interrupt: createjs.Sound.INTERRUPT_ANY,
+        loop: -1,
+        volume: volumeOfBgm
+    })
+    createjs.Sound.addEventListener("fileload", () => createjs.Sound.play("sound", props));
+
 
     function setup() {
         // automatically update
@@ -56,6 +68,7 @@ $(document).ready(() => { // jQuery main
         */
         createjs.Ticker.on("tick", tick);
         createjs.Ticker.framerate = 60;
+
 
         // load assets
         repo.loadManifest([
@@ -73,8 +86,8 @@ $(document).ready(() => { // jQuery main
             {id: 'passbyBoy', src: '/images/stranger_boy.png'},
             {id: 'passbyGirl', src: '/images/stranger_girl.png'},
             {id: 'score', src: '/images/score.png'},
-            {id: 'bgMusic', src: '/images/bgmusic.mp3'},
-            {id: 'shootMusic', src: '/images/shoot.mp3'},
+            //{id: 'bgMusic', src: '/images/bgmusic.mp3'},
+            //{id: 'shootMusic', src: '/images/shoot.mp3'},
             {id: 'hourglass', src: '/images/time.png'}
         ]);
         repo.on('complete', addTitleView);
@@ -85,6 +98,8 @@ $(document).ready(() => { // jQuery main
 
 
     function addTitleView() {
+
+
         let startB = new createjs.Bitmap(repo.getResult('startB'));
         let main = new createjs.Bitmap(repo.getResult('main'));
         let bg = new createjs.Bitmap(repo.getResult('bg'));
@@ -113,9 +128,9 @@ $(document).ready(() => { // jQuery main
 
         for (let i = 0; i < 3; i++) {
             criminal = new createjs.Bitmap(repo.getResult('criminal'));
-            criminal.set({scaleX: 0.12, scaleY: 0.12});
+            criminal.set({scaleX: 0.15, scaleY: 0.15});
             criminals.push(criminal);
-            let theHeight = i * criminal.image.height * criminal.scaleY * 1.4 + topBarHeight;//1.4為毒販間距
+            let theHeight = i * criminal.image.height * criminal.scaleY * 1.1 + topBarHeight;//1.4為毒販間距
             criminals[i].set({x: stage.canvas.width, y: theHeight});
         }
         for (let i = 0; i < 3; i++) {
@@ -126,17 +141,17 @@ $(document).ready(() => { // jQuery main
     function changeCriminal(change, i) {
         if (change === 0) {//change to boy
             criminals[i].image = boy.image;
-            criminals[i].set({scaleX: 0.075, scaleY: 0.075});
+            criminals[i].set({scaleX: 0.08, scaleY: 0.08});
             console.log("Change to boy.");
         }
         else if (change === 1) {//change to girl
             criminals[i].image = girl.image;
-            criminals[i].set({scaleX: 0.14, scaleY: 0.14});
+            criminals[i].set({scaleX: 0.15, scaleY: 0.15});
             console.log("Change to girl.");
         }
         else if (change === 2) {//change to criminal
             criminals[i].image = criminal.image;
-            criminals[i].set({scaleX: 0.12, scaleY: 0.12});
+            criminals[i].set({scaleX: 0.15, scaleY: 0.15});
             console.log("Change to criminal.");
         }
         else {
@@ -224,7 +239,7 @@ $(document).ready(() => { // jQuery main
                 //console.log("shooting!");
 
                 for (let i = 0; i < 3; i++) {
-                    if (police.y > criminals[i].y - 30 && police.y < criminals[i].y + 80 && isAppear[i] === 1) {
+                    if (police.y > criminals[i].y - 20 && police.y < criminals[i].y + 100 && isAppear[i] === 1) {
                         //console.log("hit!");
                         exp.x = criminals[i].x;
                         exp.y = criminals[i].y;
@@ -261,7 +276,6 @@ $(document).ready(() => { // jQuery main
 
 
     function drawGame() {
-
         //console.log("call drawGame");
         stage.removeChild(TitleView);
         TitleView = null;
@@ -326,6 +340,7 @@ $(document).ready(() => { // jQuery main
     }
 
     function startTheGame() {
+
         beforeGameTime = Math.floor(createjs.Ticker.getTime() / 1000);
         stage.removeChild(TeachView);
         TeachView = null;
@@ -351,8 +366,12 @@ $(document).ready(() => { // jQuery main
                     }
                     break;
                 case 32:
-                    bullet = new createjs.Shape();
+                    //播放槍擊聲
+                    //第一發沒有聲音，但把載入移到前面會重複播放bgm
+                    createjs.Sound.registerSound({src: "/images/shoot.mp3", id: "sound2"});
+                    createjs.Sound.play("sound2");
 
+                    bullet = new createjs.Shape();
                     bullet.graphics.beginFill('silver').drawCircle(police.x + (police.image.width) * police.scaleX + 10, police.y + (police.image.height) * police.scaleY / 6, 2);
                     createjs.Tween.get(bullet)
                         .to({x: stage.canvas.width}, 100)
