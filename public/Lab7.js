@@ -20,12 +20,11 @@ $(document).ready(() => { // jQuery main
     let isCounted = false;//防止重複計數
     const topBarHeight = 250;
     let isAppear = [1, 1, 1];//0:毒販重生中，打到不會計分，1:計分
-    let nextTimeAppear = [0, 0, 0];
+    let nextTimeAppear = [1, 1, 1];
     let criminalsAppearFrequency = 50; //毒販生成頻率
     let criminalsAvgSpeed = 2;//毒販走路速度
     let backgroundPlaying;
     let backgroundBuilding;
-    let isPassbyAppear = false;
     let criminal;
     let tickTimes = 0;  //tick總次數
     let totalTime = 0;
@@ -33,6 +32,7 @@ $(document).ready(() => { // jQuery main
     let boy;
     let girl;
     let beforeGameTime = 0;
+    let isCriminal = [1, 1, 1];
 
     //計數器
     let counter = new createjs.Text(new String(kills), "20px Arial", "black");
@@ -115,26 +115,32 @@ $(document).ready(() => { // jQuery main
             criminal = new createjs.Bitmap(repo.getResult('criminal'));
             criminal.set({scaleX: 0.12, scaleY: 0.12});
             criminals.push(criminal);
-            //let theHeight = (Math.floor(Math.random() * 100) % 3) * criminal.image.height * criminal.scaleY * 1.4 + topBarHeight;//1.4為毒販間距
             let theHeight = i * criminal.image.height * criminal.scaleY * 1.4 + topBarHeight;//1.4為毒販間距
             criminals[i].set({x: stage.canvas.width, y: theHeight});
         }
         for (let i = 0; i < 3; i++) {
             stage.addChild(criminals[i]);
         }
-
     }
 
     function changeCriminal(change, i) {
         if (change === 0) {//change to boy
-            criminals[i] = boy;
+            criminals[i].image = boy.image;
+            criminals[i].set({scaleX: 0.075, scaleY: 0.075});
+            console.log("Change to boy.");
         }
         else if (change === 1) {//change to girl
-            criminals[i] = girl;
-        } else {
-            criminals[i] = criminal;
+            criminals[i].image = girl.image;
+            criminals[i].set({scaleX: 0.14, scaleY: 0.14});
+            console.log("Change to girl.");
         }
-
+        else if (change === 2) {//change to criminal
+            criminals[i].image = criminal.image;
+            criminals[i].set({scaleX: 0.12, scaleY: 0.12});
+            console.log("Change to criminal.");
+        }
+        else {
+        }
     }
 
     function tick() {//update every second   //call 60 times per second
@@ -142,13 +148,7 @@ $(document).ready(() => { // jQuery main
         //time's up, game over, move to finalScreen
         tickTimes += 1;
         //console.log(tickTimes);
-
-
-        //if (tickTimes === 800) {   //600加上多遊戲介紹時間，最好要從gameStart後開始算時間
-        //createjs.Ticker.off("tick", tick);
-        //createjs.Tween.get(nothing).to({y: -320}, 300).call(moveToFinalScreen());
-        //}
-
+        stage.removeChild(timer);
         if (gameStart) {
             //遊戲剩餘秒數
             totalTime = 60 + beforeGameTime - Math.floor(createjs.Ticker.getTime() / 1000);
@@ -156,17 +156,58 @@ $(document).ready(() => { // jQuery main
                 createjs.Ticker.off("tick", tick);
                 createjs.Tween.get(nothing).to({y: -320}, 300).call(moveToFinalScreen());
             }
-            timer.text = String(totalTime);
+            if (totalTime <= 9) {//顯示0:0X
+                timer.text = "0:0" + String(totalTime);
+            } else {//顯示0:XX
+                timer.text = "0:" + String(totalTime);
+            }
             timer.x = 900;
             stage.addChild(timer);
 
-            for (let i = 0; i < 3; i++) {
-                if (nextTimeAppear[i] === 0) {//重生時間到
-                    //changeCriminal(Math.floor(Math.random() * 10) % 3, i);
+
+            for (let i = 0; i < 3; i++) {//重生時間到
+                if (nextTimeAppear[i] === 0) {
                     isAppear[i] = 1;
-                    speedX[i] = -1 * (Math.floor(Math.random() * 10) % 3 + criminalsAvgSpeed);
+                    speedX[i] = -1 * (Math.floor(Math.random() * 100) % 3 + criminalsAvgSpeed);
                 }
             }
+
+            //更換路人
+            if (nextTimeAppear[0] > 0) {
+                if (isCriminal[0] === 1) {
+                    if (totalTime % 9 === 1) {
+                        changeCriminal(0, 0);
+                        isCriminal[0] = 0;
+                    }
+                    if (totalTime % 17 === 1) {
+                        changeCriminal(1, 0);
+                        isCriminal[0] = 0;
+                    }
+                }
+            }
+            if (nextTimeAppear[1] > 0) {
+                if (isCriminal[1] === 1) {
+                    if (totalTime % 29 === 1) {
+                        changeCriminal(0, 1);
+                        isCriminal[1] = 0;
+                    }
+                    if (totalTime % 11 === 1) {
+                        changeCriminal(1, 1);
+                        isCriminal[1] = 0;
+                    }
+                }
+            }
+            /*(有圖片size改變的Bug)
+            if (nextTimeAppear[2] > 0) {
+                if (isCriminal[2] === 1) {
+                    if (totalTime % 23 === 1) {
+                        changeCriminal(0, 2);
+                        isCriminal[2] = 0;
+                    }
+                }
+            }
+            */
+
             //createjs.Tween.get(backgroundBuilding, {loop: true}).to({x: 0}, 3000);
             counter.text = kills;
             criminals[0].x += speedX[0];
@@ -180,11 +221,11 @@ $(document).ready(() => { // jQuery main
             }
             //collision detection
             if (shooting) {
-                console.log("shooting!");
+                //console.log("shooting!");
 
                 for (let i = 0; i < 3; i++) {
-                    if (police.y > criminals[i].y - 20 && police.y < criminals[i].y + 85 && isAppear[i] === 1) {
-                        console.log("hit!");
+                    if (police.y > criminals[i].y - 30 && police.y < criminals[i].y + 80 && isAppear[i] === 1) {
+                        //console.log("hit!");
                         exp.x = criminals[i].x;
                         exp.y = criminals[i].y;
                         stage.addChild(exp);
@@ -197,11 +238,9 @@ $(document).ready(() => { // jQuery main
                         }
 
                         criminals[i].x = stage.canvas.width;
-                        if (isPassbyAppear) {
-                            criminals[0] = criminal;
-                            criminals[1] = criminal;
-                            criminals[2] = criminal;
-                            isPassbyAppear = false;
+                        if (isCriminal[i] === 0) {//如果不是毒販則變回毒販
+                            changeCriminal(2, i);
+                            isCriminal[i] = 1;
                         }
                     }
                 }
@@ -231,6 +270,7 @@ $(document).ready(() => { // jQuery main
         // function handleTick(event) {
         //
         // }
+
         boy = new createjs.Bitmap(repo.getResult('passbyBoy'));
         girl = new createjs.Bitmap(repo.getResult('passbyGirl'));
 
@@ -313,7 +353,7 @@ $(document).ready(() => { // jQuery main
                 case 32:
                     bullet = new createjs.Shape();
 
-                    bullet.graphics.beginFill('black').drawCircle(police.x + (police.image.width) * police.scaleX + 10, police.y + (police.image.height) * police.scaleY / 6, 2);
+                    bullet.graphics.beginFill('silver').drawCircle(police.x + (police.image.width) * police.scaleX + 10, police.y + (police.image.height) * police.scaleY / 6, 2);
                     createjs.Tween.get(bullet)
                         .to({x: stage.canvas.width}, 100)
                         .call(() => {
@@ -331,6 +371,7 @@ $(document).ready(() => { // jQuery main
     }
 
     function moveToFinalScreen() {
+        gameStart = false;
         stage.removeAllChildren();
         stage.update();
 
