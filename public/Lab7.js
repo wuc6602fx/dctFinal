@@ -6,6 +6,7 @@ $(document).ready(() => { // jQuery main
     let TeachView = new createjs.Container();
     let nothing = new createjs.Container();//Redundant object, used in tick(), in order to change to finalView
     let finalView = new createjs.Container();
+    let startA;
     let startB;
     let criminals = [];
     let speedX = [-4, -3, -2];//criminal speed
@@ -34,7 +35,7 @@ $(document).ready(() => { // jQuery main
     let beforeGameTime = 0;
     let isCriminal = [1, 1, 1];
     let volumeOfBgm = 0.3;//0~1
-
+    let teachStart = false;
 
     //計數器
     let counter = new createjs.Text(new String(kills), "20px Arial", "black");
@@ -103,7 +104,7 @@ $(document).ready(() => { // jQuery main
 
 
     function addTitleView() {
-        let startB = new createjs.Bitmap(repo.getResult('startB'));
+        startB = new createjs.Bitmap(repo.getResult('startB'));
         startB.set({
             x: stage.canvas.width - 400,
             y: stage.canvas.height * 0.75,
@@ -116,6 +117,7 @@ $(document).ready(() => { // jQuery main
         //console.log("Add Title View");
 
         startB.name = 'startB';
+
         let story = new createjs.Bitmap(repo.getResult('story'));
         story.set({x: stage.canvas.width / 32 + 10, y: stage.canvas.height / 32, scaleX: 0.5, scaleY: 0.5});
 
@@ -175,6 +177,20 @@ $(document).ready(() => { // jQuery main
         tickTimes += 1;
         //console.log(tickTimes);
         stage.removeChild(timer);
+        if (teachStart) {
+            if (stage.mouseX > startA.x && stage.mouseY > startA.y) {
+                startA.color = 1;
+            } else {
+                startA.alpha = 0.9;
+            }
+        }
+
+        if (stage.mouseX > startB.x && stage.mouseY > startB.y) {
+            startB.alpha = 1;
+        } else {
+            startB.alpha = 0.9;
+        }
+
         if (gameStart) {
             //遊戲剩餘秒數
             totalTime = 60 + beforeGameTime - Math.floor(createjs.Ticker.getTime() / 1000);
@@ -328,7 +344,6 @@ $(document).ready(() => { // jQuery main
 
     function teachTheGame() {
         startB = new createjs.Bitmap(repo.getResult('startB'));
-        //let main = new createjs.Bitmap(repo.getResult('main'));
         let bg = new createjs.Bitmap(repo.getResult('teachBg'));
         bg.set({x: 0, y: 0, scaleX: 1, scaleY: 1});
 
@@ -336,7 +351,7 @@ $(document).ready(() => { // jQuery main
         story.set({x: stage.canvas.width / 32 + 10, y: stage.canvas.height / 32, scaleX: 0.5, scaleY: 0.5});
 
         let rule = new createjs.Bitmap(repo.getResult('rule'));
-        rule.set({x: stage.canvas.width / 32 + 10, y: stage.canvas.height / 32, scaleX: 0.5, scaleY: 0.5});
+        rule.set({x: stage.canvas.width / 32 + 20, y: stage.canvas.height / 32, scaleX: 0.49, scaleY: 0.49});
 
         startB.set({
             x: stage.canvas.width - 400,
@@ -346,7 +361,7 @@ $(document).ready(() => { // jQuery main
             name: 'startB'
         });
 
-        let startA = new createjs.Bitmap(repo.getResult('startA'));
+        startA = new createjs.Bitmap(repo.getResult('startA'));
         startA.set({
             x: stage.canvas.width - 400,
             y: stage.canvas.height * 0.75,
@@ -355,7 +370,7 @@ $(document).ready(() => { // jQuery main
             name: 'startA'
         });
 
-
+        teachStart = true;
         TeachView.addChild(bg, rule, story, startA);
         stage.addChild(TeachView);
         stage.update();
@@ -365,6 +380,7 @@ $(document).ready(() => { // jQuery main
             });
         });
         startB.on("click", function (event) {
+            teachStart = false;
             createjs.Tween.get(TeachView).to({y: -800}, 500).call(startTheGame());
             //startTheGame();
         });
@@ -375,6 +391,7 @@ $(document).ready(() => { // jQuery main
         beforeGameTime = Math.floor(createjs.Ticker.getTime() / 1000);
         stage.removeChild(TeachView);
         TeachView = null;
+
         gameStart = true;
         //createjs.Ticker.on("tick", tick);  //for test
         //createjs.Ticker.framerate = 60;
