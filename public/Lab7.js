@@ -78,14 +78,19 @@ $(document).ready(() => { // jQuery main
             {id: 'm4', src: "images/m4.png"},
             {id: 'police', src: "images/police.png"},//police
             {id: 'explode', src: '/images/exp.png'},//bullet explode
-            {id: 'startB', src: '/images/startB.png'},
-            {id: 'main', src: '/images/main.jpg'},
+            {id: 'startA', src: '/images/teach_icon.png'},
+            {id: 'startB', src: '/images/game_icon.png'},
+            {id: 'main', src: '/images/fake_logo.png'},
             {id: 'bg', src: '/images/bg.jpg'},
             {id: 'backgroundPlaying', src: '/images/background_playing.png'},
             {id: 'backgroundBuilding', src: '/images/background_house.png'},
             {id: 'passbyBoy', src: '/images/stranger_boy.png'},
             {id: 'passbyGirl', src: '/images/stranger_girl.png'},
             {id: 'score', src: '/images/score.png'},
+            {id: 'teachBg', src: '/images/opening_back_OK.png'},
+            {id: 'rule', src: '/images/rule.png'},
+            {id: 'story', src: '/images/story.png'},
+            {id: 'teachWindow', src: '/images/rule.png'},
             //{id: 'bgMusic', src: '/images/bgmusic.mp3'},
             //{id: 'shootMusic', src: '/images/shoot.mp3'},
             {id: 'hourglass', src: '/images/time.png'}
@@ -98,18 +103,24 @@ $(document).ready(() => { // jQuery main
 
 
     function addTitleView() {
-
-
         let startB = new createjs.Bitmap(repo.getResult('startB'));
+        startB.set({
+            x: stage.canvas.width - 400,
+            y: stage.canvas.height * 0.75,
+            scaleX: 0.4,
+            scaleY: 0.4
+        });
         let main = new createjs.Bitmap(repo.getResult('main'));
-        let bg = new createjs.Bitmap(repo.getResult('bg'));
+        main.set({scaleX: 0.25, scaleY: 0.25});
+        let bg = new createjs.Bitmap(repo.getResult('teachBg'));
         //console.log("Add Title View");
-        startB.x = 240;
-        startB.y = 160;
+
         startB.name = 'startB';
+        let story = new createjs.Bitmap(repo.getResult('story'));
+        story.set({x: stage.canvas.width / 32 + 10, y: stage.canvas.height / 32, scaleX: 0.5, scaleY: 0.5});
 
 
-        TitleView.addChild(bg, main, startB);
+        TitleView.addChild(bg, story, main, startB);
         stage.addChild(TitleView);
         stage.update();
 
@@ -120,7 +131,7 @@ $(document).ready(() => { // jQuery main
         //     createjs.Tween.get(TitleView).to({y:-320}, 300).call(drawGame);
         // }
         startB.on("click", function (event) {
-            createjs.Tween.get(TitleView).to({y: -320}, 300).call(drawGame);
+            createjs.Tween.get(main).to({y: -800}, 600, createjs.Ease.quadInOut).call(drawGame);
         });
     }
 
@@ -318,23 +329,43 @@ $(document).ready(() => { // jQuery main
     function teachTheGame() {
         startB = new createjs.Bitmap(repo.getResult('startB'));
         //let main = new createjs.Bitmap(repo.getResult('main'));
-        let bg = new createjs.Bitmap(repo.getResult('bg'));
-        bg.set({x: bg.image.width / 4, y: bg.image.height / 4, scaleX: 0.5, scaleY: 0.5});
+        let bg = new createjs.Bitmap(repo.getResult('teachBg'));
+        bg.set({x: 0, y: 0, scaleX: 1, scaleY: 1});
+
+        let story = new createjs.Bitmap(repo.getResult('story'));
+        story.set({x: stage.canvas.width / 32 + 10, y: stage.canvas.height / 32, scaleX: 0.5, scaleY: 0.5});
+
+        let rule = new createjs.Bitmap(repo.getResult('rule'));
+        rule.set({x: stage.canvas.width / 32 + 10, y: stage.canvas.height / 32, scaleX: 0.5, scaleY: 0.5});
 
         startB.set({
-            x: bg.image.width / 4 + startB.image.width / 4,
-            y: bg.image.height / 4 + startB.image.height / 4,
-            scaleX: 0.5,
-            scaleY: 0.5
+            x: stage.canvas.width - 400,
+            y: stage.canvas.height * 0.75,
+            scaleX: 0.4,
+            scaleY: 0.4,
+            name: 'startB'
         });
-        startB.name = 'startB';
+
+        let startA = new createjs.Bitmap(repo.getResult('startA'));
+        startA.set({
+            x: stage.canvas.width - 400,
+            y: stage.canvas.height * 0.75,
+            scaleX: 0.4,
+            scaleY: 0.4,
+            name: 'startA'
+        });
 
 
-        TeachView.addChild(bg, startB);
+        TeachView.addChild(bg, rule, story, startA);
         stage.addChild(TeachView);
         stage.update();
+        startA.on("click", function (event) {
+            createjs.Tween.get(story).to({y: -800}, 500).call(() => {
+                TeachView.addChild(startB)
+            });
+        });
         startB.on("click", function (event) {
-            createjs.Tween.get(TeachView).to({y: -320}, 300).call(startTheGame());
+            createjs.Tween.get(TeachView).to({y: -800}, 500).call(startTheGame());
             //startTheGame();
         });
     }
