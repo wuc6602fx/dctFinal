@@ -37,6 +37,13 @@ $(document).ready(() => { // jQuery main
     let volumeOfBgm = 0.3;//0~1
     let teachStart = false;
 
+    let startMusic = new Audio('/images/startmusic.mp3');
+    startMusic.loop = true;
+    let playingMusic = new Audio('/images/bgmusic.mp3');
+    playingMusic.loop = false;
+    let endMusic = new Audio('/images/endmusic.mp3');
+    endMusic.loop = true;
+
     //計數器
     let counter = new createjs.Text(new String(kills), "20px Arial", "black");
     let bounds = counter.getBounds();
@@ -51,60 +58,52 @@ $(document).ready(() => { // jQuery main
     timer.scale = 1.5;
 
     //播放背景音樂
+    /*
     createjs.Sound.registerSound({src: "/images/bgmusic.mp3", id: "sound"});
-    var props = new createjs.PlayPropsConfig().set({
+    var props = new createjs.PlayPropsConfig().set({//循環播放音樂
         interrupt: createjs.Sound.INTERRUPT_ANY,
         loop: -1,
         volume: volumeOfBgm
     })
-    createjs.Sound.addEventListener("fileload", () => createjs.Sound.play("sound", props));
-
-
+    createjs.Sound.addEventListener("fileload", () => createjs.Sound.play("sound", props));//load完開始播放
+*/
     function setup() {
         // automatically update
-        /*
-        createjs.Ticker.on("tick", (e) => {
-            stage.update();
-        });
-        */
         createjs.Ticker.on("tick", tick);
+        //fps = 60
         createjs.Ticker.framerate = 60;
-
+        //endMusic.pause();
+        startMusic.play();
 
         // load assets
         repo.loadManifest([
             {id: 'criminal', src: "images/drugs_man.png"},//criminals
-            {id: 'm2', src: "images/m2.png"},//man
-            {id: 'm3', src: "images/m3.png"},
-            {id: 'm4', src: "images/m4.png"},
             {id: 'police', src: "images/police.png"},//police
-            {id: 'explode', src: '/images/exp.png'},//bullet explode
-            {id: 'startA', src: '/images/teach_icon.png'},
-            {id: 'startB', src: '/images/game_icon.png'},
-            {id: 'main', src: '/images/fake_logo.png'},
+            {id: 'explode', src: '/images/blood.png'},//bullet explode
+            {id: 'startA', src: '/images/teach_icon.png'},//遊戲教學按鈕
+            {id: 'startB', src: '/images/game_icon.png'},//遊戲開始按鈕
+            {id: 'main', src: '/images/fake_logo.png'},//封面圖案
             {id: 'bg', src: '/images/bg.jpg'},
-            {id: 'backgroundPlaying', src: '/images/background_playing.png'},
-            {id: 'backgroundBuilding', src: '/images/background_house.png'},
-            {id: 'passbyBoy', src: '/images/stranger_boy.png'},
-            {id: 'passbyGirl', src: '/images/stranger_girl.png'},
-            {id: 'score', src: '/images/score.png'},
-            {id: 'teachBg', src: '/images/opening_back_OK.png'},
-            {id: 'rule', src: '/images/rule.png'},
-            {id: 'story', src: '/images/story.png'},
-            {id: 'teachWindow', src: '/images/rule.png'},
-            //{id: 'bgMusic', src: '/images/bgmusic.mp3'},
-            //{id: 'shootMusic', src: '/images/shoot.mp3'},
-            {id: 'hourglass', src: '/images/time.png'}
+            {id: 'backgroundPlaying', src: '/images/background_playing.png'},//遊戲畫面背景
+            {id: 'backgroundBuilding', src: '/images/background_house.png'},//遊戲畫面建築物
+            {id: 'passbyBoy', src: '/images/stranger_boy.png'},//男孩
+            {id: 'passbyGirl', src: '/images/stranger_girl.png'},//女孩
+            {id: 'score', src: '/images/score.png'},//擊殺數圖案
+            {id: 'teachBg', src: '/images/opening_back_OK.png'},//教學背景
+            {id: 'rule', src: '/images/rule.png'},//規則介紹
+            {id: 'story', src: '/images/story.png'},//背景故事
+            {id: 'hourglass', src: '/images/time.png'}//計時沙漏
         ]);
-        repo.on('complete', addTitleView);
+        repo.on('complete', addTitleView);//全部載入後進入封面畫面
     }
 
 
-    //addTitleView()
-
-
+    /***********************************************
+     *  封面畫面繪圖函式
+     *
+     **************************************************/
     function addTitleView() {
-        startB = new createjs.Bitmap(repo.getResult('startB'));
+        startB = new createjs.Bitmap(repo.getResult('startB'));//載入遊戲開始圖案
         startB.set({
             x: stage.canvas.width - 400,
             y: stage.canvas.height * 0.75,
@@ -114,9 +113,6 @@ $(document).ready(() => { // jQuery main
         let main = new createjs.Bitmap(repo.getResult('main'));
         main.set({scaleX: 0.25, scaleY: 0.25});
         let bg = new createjs.Bitmap(repo.getResult('teachBg'));
-        //console.log("Add Title View");
-
-        startB.name = 'startB';
 
         let story = new createjs.Bitmap(repo.getResult('story'));
         story.set({x: stage.canvas.width / 32 + 10, y: stage.canvas.height / 32, scaleX: 0.5, scaleY: 0.5});
@@ -137,13 +133,17 @@ $(document).ready(() => { // jQuery main
         });
     }
 
+    /**********************
+     *  製造囚犯的函式
+     *
+     *********************/
     function createCriminals() {
-
         for (let i = 0; i < 3; i++) {
             criminal = new createjs.Bitmap(repo.getResult('criminal'));
             criminal.set({scaleX: 0.13, scaleY: 0.15});
             criminals.push(criminal);
-            let theHeight = i * criminal.image.height * criminal.scaleY * 1.1 + topBarHeight;//1.4為毒販間距
+            //遊戲中毒販有三個路，theHeight為第一列高度*(1~3)+上下路間距
+            let theHeight = i * criminal.image.height * criminal.scaleY * 1.1 + topBarHeight;//1.1為毒販間距
             criminals[i].set({x: stage.canvas.width, y: theHeight});
         }
         for (let i = 0; i < 3; i++) {
@@ -323,7 +323,7 @@ $(document).ready(() => { // jQuery main
         hourglass = new createjs.Bitmap(repo.getResult('hourglass'));
         //resize image
         police.set({scaleX: 0.15, scaleY: 0.15});
-        exp.set({scaleX: 0.5, scaleY: 0.5});
+        exp.set({scaleX: 0.1, scaleY: 0.1});
         backgroundBuilding.set({x: stage.canvas.width, y: 30, scaleX: 1.1, scaleY: 0.5});
         backgroundPlaying.set({x: 0, y: 0});
         stage.addChild(backgroundPlaying);
@@ -387,7 +387,8 @@ $(document).ready(() => { // jQuery main
     }
 
     function startTheGame() {
-
+        startMusic.pause();
+        playingMusic.play();
         beforeGameTime = Math.floor(createjs.Ticker.getTime() / 1000);
         stage.removeChild(TeachView);
         TeachView = null;
@@ -416,8 +417,10 @@ $(document).ready(() => { // jQuery main
                 case 32:
                     //播放槍擊聲
                     //第一發沒有聲音，但把載入移到前面會重複播放bgm
-                    createjs.Sound.registerSound({src: "/images/shoot.mp3", id: "sound2"});
-                    createjs.Sound.play("sound2");
+                    //createjs.Sound.registerSound({src: "/images/shoot.mp3", id: "sound2"});
+                    //createjs.Sound.play("sound2");
+                    var shoot = new Audio('/images/shoot.mp3');
+                    shoot.play();
 
                     bullet = new createjs.Shape();
                     bullet.graphics.beginFill('silver').drawCircle(police.x + (police.image.width) * police.scaleX + 10, police.y + (police.image.height) * police.scaleY / 6, 2);
@@ -439,6 +442,8 @@ $(document).ready(() => { // jQuery main
 
     function moveToFinalScreen() {
         gameStart = false;
+        playingMusic.pause();
+        endMusic.play();
         stage.removeAllChildren();
         stage.update();
 
