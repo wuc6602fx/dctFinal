@@ -36,6 +36,7 @@ $(document).ready(() => { // jQuery main
     let isCriminal = [1, 1, 1];
     let volumeOfBgm = 1;//0~1
     let teachStart = false;
+    let gamingTime = 5;
 
 
     //let startMusic = new Audio('/images/startmusic.mp3');
@@ -93,7 +94,9 @@ $(document).ready(() => { // jQuery main
             {id: 'teachBg', src: '/images/opening_back_OK.png'},//教學背景
             {id: 'rule', src: '/images/rule.png'},//規則介紹
             {id: 'story', src: '/images/story.png'},//背景故事
-            {id: 'hourglass', src: '/images/time.png'}//計時沙漏
+            {id: 'hourglass', src: '/images/time.png'},//計時沙漏
+            {id: 'policeLast', src: '/images/police_last.png'},//獲獎畫面警察
+            {id: 'no1', src: '/images/no1.png'}//NO.1獎盃
         ]);
         repo.on('complete', addTitleView);//全部載入後進入封面畫面
     }
@@ -193,7 +196,7 @@ $(document).ready(() => { // jQuery main
 
         if (gameStart) {
             //遊戲剩餘秒數
-            totalTime = 60 + beforeGameTime - Math.floor(createjs.Ticker.getTime() / 1000);
+            totalTime = gamingTime + beforeGameTime - Math.floor(createjs.Ticker.getTime() / 1000);
             if (totalTime === 0) {
                 createjs.Ticker.off("tick", tick);
                 createjs.Tween.get(nothing).to({y: -320}, 300).call(moveToFinalScreen());
@@ -449,9 +452,14 @@ $(document).ready(() => { // jQuery main
         stage.update();
 
         let bg = new createjs.Bitmap(repo.getResult('bg'));
-        finalView.addChild(bg);
+        let police = new createjs.Bitmap(repo.getResult('policeLast'));
+        police.set({x: 0, y: 0, scaleX: 0.5, scaleY: 0.5});
+        let no1 = new createjs.Bitmap(repo.getResult('no1'));
+        no1.set({x: 300, y: 300});
+        finalView.addChild(bg, police, no1);
         stage.addChild(finalView);
         stage.update();
+
     }
 
     setup();
