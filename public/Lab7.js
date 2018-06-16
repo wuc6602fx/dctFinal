@@ -34,12 +34,14 @@ $(document).ready(() => { // jQuery main
     let girl;
     let beforeGameTime = 0;
     let isCriminal = [1, 1, 1];
-    let volumeOfBgm = 0.3;//0~1
+    let volumeOfBgm = 1;//0~1
     let teachStart = false;
 
-    let startMusic = new Audio('/images/startmusic.mp3');
-    startMusic.loop = true;
+
+    //let startMusic = new Audio('/images/startmusic.mp3');
+    //startMusic.loop = true;
     let playingMusic = new Audio('/images/bgmusic.mp3');
+    playingMusic.time = -2;
     playingMusic.loop = false;
     let endMusic = new Audio('/images/endmusic.mp3');
     endMusic.loop = true;
@@ -57,23 +59,22 @@ $(document).ready(() => { // jQuery main
     timer.y = 10;
     timer.scale = 1.5;
 
-    //播放背景音樂
-    /*
-    createjs.Sound.registerSound({src: "/images/bgmusic.mp3", id: "sound"});
+    //播放開始音樂
+    createjs.Sound.registerSound({src: "/images/startmusic.mp3", id: "sound"});
     var props = new createjs.PlayPropsConfig().set({//循環播放音樂
         interrupt: createjs.Sound.INTERRUPT_ANY,
         loop: -1,
         volume: volumeOfBgm
     })
     createjs.Sound.addEventListener("fileload", () => createjs.Sound.play("sound", props));//load完開始播放
-*/
+
     function setup() {
         // automatically update
         createjs.Ticker.on("tick", tick);
         //fps = 60
         createjs.Ticker.framerate = 60;
         //endMusic.pause();
-        startMusic.play();
+        //startMusic.play();
 
         // load assets
         repo.loadManifest([
@@ -172,7 +173,6 @@ $(document).ready(() => { // jQuery main
     }
 
     function tick() {//update every second   //call 60 times per second
-
         //time's up, game over, move to finalScreen
         tickTimes += 1;
         //console.log(tickTimes);
@@ -387,7 +387,8 @@ $(document).ready(() => { // jQuery main
     }
 
     function startTheGame() {
-        startMusic.pause();
+        //startMusic.pause();
+        createjs.Sound.stop("sound", props);
         playingMusic.play();
         beforeGameTime = Math.floor(createjs.Ticker.getTime() / 1000);
         stage.removeChild(TeachView);
@@ -406,12 +407,12 @@ $(document).ready(() => { // jQuery main
             switch (e.keyCode) {
                 case 38:// up
                     if (police.y > topBarHeight - 50) {
-                        police.y -= 10;
+                        police.y -= 20;
                     }
                     break;
                 case 40:// down
                     if (police.y < 600) {
-                        police.y += 10;
+                        police.y += 20;
                     }
                     break;
                 case 32:
