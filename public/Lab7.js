@@ -36,7 +36,7 @@ $(document).ready(() => { // jQuery main
     let isCriminal = [1, 1, 1];
     let volumeOfBgm = 1;//0~1
     let teachStart = false;
-    let gamingTime = 1;
+    let gamingTime = 15;
 
 
     //let startMusic = new Audio('/images/startmusic.mp3');
@@ -469,9 +469,9 @@ $(document).ready(() => { // jQuery main
         //counter.x = stage.canvas.width - bounds.width >> 1;
         //counter.y = 10;
         counter.color = "white";
-        counter.x = 350;
-        counter.y = 150;
-        counter.scale = 1.5;
+        counter.x = 370;
+        counter.y = 156;
+        counter.scale = 3.0;
 
         ending1.set({x: 0, y: 0, scaleX: 0.75, scaleY: 0.75});
         ending2.set({x: 0, y: 0, scaleX: 0.75, scaleY: 0.75});
