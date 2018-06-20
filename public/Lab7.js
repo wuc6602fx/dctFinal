@@ -84,7 +84,7 @@ $(document).ready(() => { // jQuery main
             {id: 'explode', src: '/images/blood.png'},//bullet explode
             {id: 'startA', src: '/images/teach_icon.png'},//遊戲教學按鈕
             {id: 'startB', src: '/images/game_icon.png'},//遊戲開始按鈕
-            {id: 'main', src: '/images/fake_logo.png'},//封面圖案
+            {id: 'main', src: '/images/open_new1.png'},//封面圖案
             {id: 'bg', src: '/images/bg.jpg'},
             {id: 'backgroundPlaying', src: '/images/background_playing.png'},//遊戲畫面背景
             {id: 'backgroundBuilding', src: '/images/background_house.png'},//遊戲畫面建築物
@@ -115,20 +115,20 @@ $(document).ready(() => { // jQuery main
     function addTitleView() {
         startB = new createjs.Bitmap(repo.getResult('startB'));//載入遊戲開始圖案
         startB.set({
-            x: stage.canvas.width - 400,
+            x: stage.canvas.width / 2 - 150,
             y: stage.canvas.height * 0.75,
-            scaleX: 0.4,
-            scaleY: 0.4
+            scaleX: 0.35,
+            scaleY: 0.35
         });
         let main = new createjs.Bitmap(repo.getResult('main'));
-        main.set({scaleX: 0.25, scaleY: 0.25});
+        main.set({scaleX: 0.18, scaleY: 0.18, x: stage.canvas.width / 4, y: 50});
         let bg = new createjs.Bitmap(repo.getResult('teachBg'));
 
         let story = new createjs.Bitmap(repo.getResult('story'));
         story.set({x: stage.canvas.width / 32 + 10, y: stage.canvas.height / 32, scaleX: 0.5, scaleY: 0.5});
 
 
-        TitleView.addChild(bg, story, main, startB);
+        TitleView.addChild(bg, main, startB);
         stage.addChild(TitleView);
         stage.update();
 
@@ -365,8 +365,8 @@ $(document).ready(() => { // jQuery main
         startB.set({
             x: stage.canvas.width - 400,
             y: stage.canvas.height * 0.75,
-            scaleX: 0.4,
-            scaleY: 0.4,
+            scaleX: 0.35,
+            scaleY: 0.35,
             name: 'startB'
         });
 
@@ -374,8 +374,8 @@ $(document).ready(() => { // jQuery main
         startA.set({
             x: stage.canvas.width - 400,
             y: stage.canvas.height * 0.75,
-            scaleX: 0.4,
-            scaleY: 0.4,
+            scaleX: 0.35,
+            scaleY: 0.35,
             name: 'startA'
         });
 
