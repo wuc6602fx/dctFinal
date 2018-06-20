@@ -36,7 +36,7 @@ $(document).ready(() => { // jQuery main
     let isCriminal = [1, 1, 1];
     let volumeOfBgm = 1;//0~1
     let teachStart = false;
-    let gamingTime = 5;
+    let gamingTime = 1;
 
 
     //let startMusic = new Audio('/images/startmusic.mp3');
@@ -101,7 +101,9 @@ $(document).ready(() => { // jQuery main
             {id: 'tw1', src: '/images/tw_cut1.png'},
             {id: 'tw2', src: '/images/tw_cut2.png'},
             {id: 'tw3', src: '/images/tw_cut3.png'},
-            {id: 'repeat', src: '/images/repeat.png'}//在玩一次按鈕
+            {id: 'repeat', src: '/images/repeat.png'},//在玩一次按鈕
+            {id: 'ending1', src: '/images/ending1.png'},
+            {id: 'ending2', src: '/images/ending2.png'}
 
         ]);
         repo.on('complete', addTitleView);//全部載入後進入封面畫面
@@ -457,19 +459,33 @@ $(document).ready(() => { // jQuery main
         stage.removeAllChildren();
         stage.update();
 
-        let bg = new createjs.Bitmap(repo.getResult('bg'));
+        let ending1 = new createjs.Bitmap(repo.getResult('ending1'));
+        let ending2 = new createjs.Bitmap(repo.getResult('ending2'));
         let police = new createjs.Bitmap(repo.getResult('policeLast'));
+        let seeTW = new createjs.Bitmap(repo.getResult('seeTW'));
         police.set({x: 0, y: 0, scaleX: 0.5, scaleY: 0.5});
         let no1 = new createjs.Bitmap(repo.getResult('no1'));
         no1.set({x: 300, y: 300});
-        counter.x = stage.canvas.width - bounds.width >> 1;
-        counter.y = 10;
+        //counter.x = stage.canvas.width - bounds.width >> 1;
+        //counter.y = 10;
+        counter.color = "white";
+        counter.x = 350;
+        counter.y = 150;
         counter.scale = 1.5;
+
+        ending1.set({x: 0, y: 0, scaleX: 0.75, scaleY: 0.75});
+        ending2.set({x: 0, y: 0, scaleX: 0.75, scaleY: 0.75});
+        if(kills >= 40){
+            stage.addChild(ending1);
+        }
+        else {
+            stage.addChild(ending2);
+        }
+        seeTW.set({x: 750, y: 490, scaleX: 0.6, scaleY: 0.6});
+        stage.addChild(seeTW);
         stage.addChild(counter);
-        finalView.addChild(bg, police, no1);
         stage.addChild(finalView);
         stage.update();
-
     }
 
     setup();
