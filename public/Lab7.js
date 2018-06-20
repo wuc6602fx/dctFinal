@@ -36,7 +36,7 @@ $(document).ready(() => { // jQuery main
     let isCriminal = [1, 1, 1];
     let volumeOfBgm = 1;//0~1
     let teachStart = false;
-    let gamingTime = 1;
+    let gamingTime = 60;
     let twArray = [];
     let numOfTW = 0;
 
