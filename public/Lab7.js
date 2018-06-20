@@ -456,6 +456,10 @@ $(document).ready(() => { // jQuery main
         police.set({x: 0, y: 0, scaleX: 0.5, scaleY: 0.5});
         let no1 = new createjs.Bitmap(repo.getResult('no1'));
         no1.set({x: 300, y: 300});
+        counter.x = stage.canvas.width - bounds.width >> 1;
+        counter.y = 10;
+        counter.scale = 1.5;
+        stage.addChild(counter);
         finalView.addChild(bg, police, no1);
         stage.addChild(finalView);
         stage.update();
