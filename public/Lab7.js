@@ -36,7 +36,9 @@ $(document).ready(() => { // jQuery main
     let isCriminal = [1, 1, 1];
     let volumeOfBgm = 1;//0~1
     let teachStart = false;
-    let gamingTime = 15;
+    let gamingTime = 1;
+    let twArray = [];
+    let numOfTW = 0;
 
 
     //let startMusic = new Audio('/images/startmusic.mp3');
@@ -103,7 +105,10 @@ $(document).ready(() => { // jQuery main
             {id: 'tw3', src: '/images/tw_cut3.png'},
             {id: 'repeat', src: '/images/repeat.png'},//在玩一次按鈕
             {id: 'ending1', src: '/images/ending1.png'},
-            {id: 'ending2', src: '/images/ending2.png'}
+            {id: 'ending2', src: '/images/ending2.png'},
+            {id: 'tw_cut1', src: '/images/tw_cut1.png'},
+            {id: 'tw_cut2', src: '/images/tw_cut2.png'},
+            {id: 'tw_cut3', src: '/images/tw_cut3.png'}
 
         ]);
         repo.on('complete', addTitleView);//全部載入後進入封面畫面
@@ -466,6 +471,15 @@ $(document).ready(() => { // jQuery main
         police.set({x: 0, y: 0, scaleX: 0.5, scaleY: 0.5});
         let no1 = new createjs.Bitmap(repo.getResult('no1'));
         no1.set({x: 300, y: 300});
+        let tw_cut1 = new createjs.Bitmap(repo.getResult('tw_cut1'));
+        let tw_cut2 = new createjs.Bitmap(repo.getResult('tw_cut2'));
+        let tw_cut3 = new createjs.Bitmap(repo.getResult('tw_cut3'));
+        tw_cut1.set({x: 0, y: 0, scaleX: 0.75, scaleY: 0.75});
+        tw_cut2.set({x: 0, y: 0, scaleX: 0.75, scaleY: 0.75});
+        tw_cut3.set({x: 0, y: 0, scaleX: 0.75, scaleY: 0.75});
+        twArray[0] = tw_cut1;
+        twArray[1] = tw_cut2;
+        twArray[2] = tw_cut3;
         //counter.x = stage.canvas.width - bounds.width >> 1;
         //counter.y = 10;
         counter.color = "white";
@@ -485,8 +499,24 @@ $(document).ready(() => { // jQuery main
         stage.addChild(seeTW);
         stage.addChild(counter);
         stage.addChild(finalView);
+
+        seeTW.on("click", function (event) {
+            //createjs.setInterval = function(fn, ) {
+            //    createjs.Tween.get().wait(333).call(fn).loop = 1;
+            //}
+            //fn();
+            //createjs.setInterval(() => fn, 1000);
+            stage.removeAllChildren();
+            stage.addChild(twArray[0]);
+            setInterval(function(){
+                    stage.removeAllChildren();
+                    stage.addChild(twArray[(numOfTW += 1) % 3]);
+                    stage.update();
+                    }
+                ,1000);
+        });
+
         stage.update();
     }
-
     setup();
 });
