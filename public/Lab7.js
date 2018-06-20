@@ -96,7 +96,13 @@ $(document).ready(() => { // jQuery main
             {id: 'story', src: '/images/story.png'},//背景故事
             {id: 'hourglass', src: '/images/time.png'},//計時沙漏
             {id: 'policeLast', src: '/images/police_last.png'},//獲獎畫面警察
-            {id: 'no1', src: '/images/no1.png'}//NO.1獎盃
+            {id: 'no1', src: '/images/no1.png'},//NO.1獎盃
+            {id: 'seeTW', src: '/images/TW.png'},//看台灣按鈕
+            {id: 'tw1', src: '/images/tw_cut1.png'},
+            {id: 'tw2', src: '/images/tw_cut2.png'},
+            {id: 'tw3', src: '/images/tw_cut3.png'},
+            {id: 'repeat', src: '/images/repeat.png'}//在玩一次按鈕
+
         ]);
         repo.on('complete', addTitleView);//全部載入後進入封面畫面
     }
