@@ -117,8 +117,8 @@ $(document).ready(() => { // jQuery main
         startB.set({
             x: stage.canvas.width / 2 - 150,
             y: stage.canvas.height * 0.75,
-            scaleX: 0.35,
-            scaleY: 0.35
+            scaleX: 0.30,
+            scaleY: 0.30
         });
         let main = new createjs.Bitmap(repo.getResult('main'));
         main.set({scaleX: 0.18, scaleY: 0.18, x: stage.canvas.width / 4, y: 50});
@@ -363,19 +363,19 @@ $(document).ready(() => { // jQuery main
         rule.set({x: stage.canvas.width / 32 + 20, y: stage.canvas.height / 32, scaleX: 0.49, scaleY: 0.49});
 
         startB.set({
-            x: stage.canvas.width - 400,
+            x: stage.canvas.width / 2 - 100,
             y: stage.canvas.height * 0.75,
-            scaleX: 0.35,
-            scaleY: 0.35,
+            scaleX: 0.2,
+            scaleY: 0.2,
             name: 'startB'
         });
 
         startA = new createjs.Bitmap(repo.getResult('startA'));
         startA.set({
-            x: stage.canvas.width - 400,
+            x: stage.canvas.width / 2 - 100,
             y: stage.canvas.height * 0.75,
-            scaleX: 0.35,
-            scaleY: 0.35,
+            scaleX: 0.2,
+            scaleY: 0.2,
             name: 'startA'
         });
 
