@@ -420,6 +420,10 @@ $(document).ready(() => { // jQuery main
         //控制方向
 
         window.addEventListener('keydown', function (e) {
+            if(gameStart === false){
+
+                window.removeEventListener("click",a);
+            }
             switch (e.keyCode) {
                 case 38:// up
                     if (police.y > topBarHeight - 50) {
@@ -455,9 +459,57 @@ $(document).ready(() => { // jQuery main
                     break;
             }
         });
+
+        window.addEventListener('click', function a(e) {
+
+                    //播放槍擊聲
+                    //第一發沒有聲音，但把載入移到前面會重複播放bgm
+                    //createjs.Sound.registerSound({src: "/images/shoot.mp3", id: "sound2"});
+                    //createjs.Sound.play("sound2");
+                    var shoot = new Audio('/images/shoot.mp3');
+                    shoot.play();
+
+                    bullet = new createjs.Shape();
+                    bullet.graphics.beginFill('silver').drawCircle(police.x + (police.image.width) * police.scaleX + 10, police.y + (police.image.height) * police.scaleY / 6, 2);
+                    createjs.Tween.get(bullet)
+                        .to({x: stage.canvas.width}, 100)
+                        .call(() => {
+                            stage.removeChild(bullet);
+                            //exp.x = 500;
+                            //exp.y = police.y;
+                            //stage.addChild(exp);
+                            shooting = false;
+                        }).wait(500).call(() => stage.removeChild(exp));
+                    stage.addChild(bullet);
+            shooting = true;
+            if(gameStart === false){
+
+                window.removeEventListener("click",a);
+            }
+        });
+
+        stage.on("mousedown",function a(event) {
+            police.y = stage.mouseY;
+            if(gameStart === false){
+                stage.removeEventListener("mousedown",a);
+            }
+        });
+        stage.on("mouseup",function a(event) {
+            police.y = stage.mouseY;
+            if(gameStart === false){
+                stage.removeEventListener("mouseup",a);
+            }
+        });
+        stage.on("mousemove",function a(event) {
+            police.y = stage.mouseY;
+            if(gameStart === false){
+                stage.removeEventListener("mousemove",a);
+            }
+        });
     }
 
     function moveToFinalScreen() {
+
         gameStart = false;
         playingMusic.pause();
         endMusic.play();
